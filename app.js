@@ -14,6 +14,10 @@ wfa.config(function ($routeProvider) {
         .when('/forecast', {
             templateUrl: 'pages/forecast.html',
             controller: 'forecast'
+        })
+        .when('/forecast/:days', {
+            templateUrl: 'pages/forecast.html',
+            controller: 'forecast'
         });
 });
 
@@ -39,16 +43,19 @@ wfa.controller('home', ['$scope', 'cityService', function (
 
 
 // forecast controller
-wfa.controller('forecast', ['$scope', '$resource', 'cityService', function (
+wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService', function (
     $scope,
     $resource,
+    $routeParams,
     cityService
 ) {
     // http://api.openweathermap.org/data/2.5/forecast/daily
     // ?APPID=dd87938102e9f4a4c73f71b7ef29a960
     var weatherAPIPath = 'http://api.openweathermap.org/data/2.5/forecast/daily' + 
         '?APPID=dd87938102e9f4a4c73f71b7ef29a960';
+
     $scope.city = cityService.city;
+    $scope.days = $routeParams.days || '3';
 
     $scope.weatherAPI = $resource(
         weatherAPIPath,
@@ -64,7 +71,7 @@ wfa.controller('forecast', ['$scope', '$resource', 'cityService', function (
 
     $scope.weatherResult = $scope.weatherAPI.get({
         q: $scope.city,
-        cnt: 5
+        cnt: $scope.days
     });
 
 
