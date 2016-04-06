@@ -4,6 +4,11 @@
 var wfa = angular.module('wfa', ['ngRoute', 'ngResource']);
 
 
+// define constants
+wfa.constant('weatherApiEndPoint', 'http://api.openweathermap.org/data/2.5/forecast/daily');
+wfa.constant('weatherApiAppId', 'dd87938102e9f4a4c73f71b7ef29a960');
+
+
 // routes
 wfa.config(function ($routeProvider) {
     $routeProvider
@@ -43,22 +48,19 @@ wfa.controller('home', ['$scope', 'cityService', function (
 
 
 // forecast controller
-wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService', function (
+wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService', 'weatherApiEndPoint', 'weatherApiAppId', function (
     $scope,
     $resource,
     $routeParams,
-    cityService
+    cityService,
+    weatherApiEndPoint,
+    weatherApiAppId
 ) {
-    // http://api.openweathermap.org/data/2.5/forecast/daily
-    // ?APPID=dd87938102e9f4a4c73f71b7ef29a960
-    var weatherAPIPath = 'http://api.openweathermap.org/data/2.5/forecast/daily' + 
-        '?APPID=dd87938102e9f4a4c73f71b7ef29a960';
-
     $scope.city = cityService.city;
     $scope.days = $routeParams.days || '3';
 
     $scope.weatherAPI = $resource(
-        weatherAPIPath,
+        weatherApiEndPoint,
         {
             callback: 'JSON_CALLBACK'
         },
@@ -69,9 +71,11 @@ wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService'
         }
     );
 
+
     $scope.weatherResult = $scope.weatherAPI.get({
         q: $scope.city,
-        cnt: $scope.days
+        cnt: $scope.days,
+        APPID: weatherApiAppId
     });
 
 
@@ -83,6 +87,4 @@ wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService'
     $scope.convertToDate = function (dt) {
         return new Date(dt * 1000);
     };
-
-    console.log($scope.weatherResult);
 }]);
