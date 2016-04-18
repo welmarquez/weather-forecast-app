@@ -71,20 +71,33 @@ wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService'
         }
     );
 
-
     $scope.weatherResult = $scope.weatherAPI.get({
         q: $scope.city,
         cnt: $scope.days,
         APPID: weatherApiAppId
     });
 
-
     $scope.convertToFahrenheit = function (degK) {
         return Math.round((1.8 * (degK - 273)) + 32);
     };
-
 
     $scope.convertToDate = function (dt) {
         return new Date(dt * 1000);
     };
 }]);
+
+
+// directives
+wfa.directive('weatherReport', function () {
+    return {
+        restrict: 'E',
+        templateUrl: 'directives/weatherReport.html',
+        replace: true,
+        scope: {
+            weatherDay: '=',
+            convertToStandard: '&',
+            convertToDate: '&',
+            dateFormat: '@'
+        }
+    };
+});
