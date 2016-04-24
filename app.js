@@ -35,8 +35,9 @@ wfa.service('cityService', function ()  {
 
 
 // home controller
-wfa.controller('home', ['$scope', 'cityService', function (
+wfa.controller('home', ['$scope', '$location', 'cityService', function (
     $scope,
+    $location,
     cityService
 ) {
     $scope.city = cityService.city;
@@ -44,6 +45,10 @@ wfa.controller('home', ['$scope', 'cityService', function (
     $scope.$watch('city', function () {
         cityService.city = $scope.city;
     });
+
+    $scope.submit = function () {
+        $location.path('forecast');
+    };
 }]);
 
 
