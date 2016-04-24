@@ -5,9 +5,6 @@ var wfa = angular.module('wfa', ['ngRoute', 'ngResource']);
 
 
 // define constants
-// wfa.constant('weatherApiEndPoint', 'http://api.openweathermap.org/data/2.5/forecast/daily');
-// wfa.constant('weatherApiAppId', 'dd87938102e9f4a4c73f71b7ef29a960');
-
 wfa.constant('weatherApi', {
     'endPoint': 'http://api.openweathermap.org/data/2.5/forecast/daily',
     'token': 'dd87938102e9f4a4c73f71b7ef29a960'
