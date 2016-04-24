@@ -5,12 +5,17 @@ var wfa = angular.module('wfa', ['ngRoute', 'ngResource']);
 
 
 // define constants
-wfa.constant('weatherApiEndPoint', 'http://api.openweathermap.org/data/2.5/forecast/daily');
-wfa.constant('weatherApiAppId', 'dd87938102e9f4a4c73f71b7ef29a960');
+// wfa.constant('weatherApiEndPoint', 'http://api.openweathermap.org/data/2.5/forecast/daily');
+// wfa.constant('weatherApiAppId', 'dd87938102e9f4a4c73f71b7ef29a960');
+
+wfa.constant('weatherApi', {
+    'endPoint': 'http://api.openweathermap.org/data/2.5/forecast/daily',
+    'token': 'dd87938102e9f4a4c73f71b7ef29a960'
+});
 
 
 // routes
-wfa.config(function ($routeProvider) {
+wfa.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl: 'pages/home.html',
@@ -24,14 +29,40 @@ wfa.config(function ($routeProvider) {
             templateUrl: 'pages/forecast.html',
             controller: 'forecast'
         });
-});
+}]);
 
 
-// service
-// open weather map api
+// city service
 wfa.service('cityService', function ()  {
     this.city = 'Manila, MN';
 });
+
+
+// open weather map api
+wfa.service('weatherService', ['weatherApi', '$resource', function (weatherApi, $resource) {
+    var weatherAPI;
+    
+    this.getWeather = function (city, days) {
+        weatherAPI = $resource(
+            weatherApi.endPoint,
+            {
+                callback: 'JSON_CALLBACK'
+            },
+            {
+                get: {
+                    method: 'JSONP'
+                }
+            }
+        );
+
+        return weatherAPI.get({
+            q: city,
+            cnt: days,
+            APPID: weatherApi.token
+        });
+    };
+
+}]);
 
 
 // home controller
@@ -53,34 +84,15 @@ wfa.controller('home', ['$scope', '$location', 'cityService', function (
 
 
 // forecast controller
-wfa.controller('forecast', ['$scope', '$resource', '$routeParams', 'cityService', 'weatherApiEndPoint', 'weatherApiAppId', function (
+wfa.controller('forecast', ['$scope', '$routeParams', 'cityService', 'weatherService', function (
     $scope,
-    $resource,
     $routeParams,
     cityService,
-    weatherApiEndPoint,
-    weatherApiAppId
+    weatherService
 ) {
     $scope.city = cityService.city;
     $scope.days = $routeParams.days || '3';
-
-    $scope.weatherAPI = $resource(
-        weatherApiEndPoint,
-        {
-            callback: 'JSON_CALLBACK'
-        },
-        {
-            get: {
-                method: 'JSONP'
-            }
-        }
-    );
-
-    $scope.weatherResult = $scope.weatherAPI.get({
-        q: $scope.city,
-        cnt: $scope.days,
-        APPID: weatherApiAppId
-    });
+    $scope.weatherResult = weatherService.getWeather($scope.city, $scope.days);
 
     $scope.convertToFahrenheit = function (degK) {
         return Math.round((1.8 * (degK - 273)) + 32);
