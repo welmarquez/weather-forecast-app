@@ -36,7 +36,11 @@ wfa.service('cityService', function ()  {
 
 
 // open weather map api
-wfa.service('weatherService', ['weatherApi', '$resource', function (weatherApi, $resource) {
+wfa.service('weatherService', [
+    'weatherApi',
+    '$resource', 
+    function (weatherApi, $resource
+) {
     var weatherAPI;
     
     this.getWeather = function (city, days) {
